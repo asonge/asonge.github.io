@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="MQTT Exactly Once is FineI was reading the MQTT specification
+for some light bedtime reading, and I was concerned at the mention of QoS settings,
+and ">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="Alexander Songe">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="MQTT Exactly Once is Fine"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Alex&#39;s Braindump"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article" />
+    
+
+    <!--Page Cover-->
+    
+
+        <meta name="twitter:card" content="summary" />
+    
+
+    <!-- Title -->
+    
+    <title>MQTT Exactly Once is Fine - Alex&#39;s Braindump</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Google Analytics -->
+    
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-94019707-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+
+
+
+    <!-- favicon -->
+    
+	
+</head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Braindump Home</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('http://www.codeblocq.com/assets/projects/hexo-theme-clean-blog/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>MQTT Exactly Once is Fine</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        2017-03-19
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/Dist-Systems/">#dist-systems</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                        
+
+<a href="/categories/Ephemera/">ephemera</a>
+
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h1 id="MQTT-Exactly-Once-is-Fine"><a href="#MQTT-Exactly-Once-is-Fine" class="headerlink" title="MQTT Exactly Once is Fine"></a>MQTT Exactly Once is Fine</h1><p>I was reading the <a href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html" target="_blank" rel="external">MQTT specification</a>
+for some light bedtime reading, and I was concerned at the mention of QoS settings,
+and one specific dread: “Exactly Once”.</p>
+<p>Exactly once delivery is a story distributed systems programmers tell each other
+late at night around campfire. Like <a href="http://tvtropes.org/pmwiki/pmwiki.php/Main/DeathBySex" target="_blank" rel="external">teenagers on a date</a>
+at <a href="http://tvtropes.org/pmwiki/pmwiki.php/Main/MakeOutPoint" target="_blank" rel="external">Make-Out Point</a>,
+relying on exactly once messaging is the setting for horror stories where
+machines attempt to talk to one another. That’s because any network message can
+at some point be dropped, and subsequent messages may arrive, and that these may
+compromise the state of the system.</p>
+<h2 id="The-Moral-Is-Use-Idempotent-Messages"><a href="#The-Moral-Is-Use-Idempotent-Messages" class="headerlink" title="The Moral Is: Use Idempotent Messages"></a>The Moral Is: Use Idempotent Messages</h2><p>At-least-once messaging is usually pretty easy to accomplish. You simply
+retransmit until you get an acknowledgement. Repeated messages then have no
+effect. An operation that has the same output or effect, no matter how many
+times it is repeated is said to be <em>idempotent</em>.</p>
+<h2 id="Use-this-one-trick-to-make-your-messages-idempotent-forever"><a href="#Use-this-one-trick-to-make-your-messages-idempotent-forever" class="headerlink" title="Use this one trick to make your messages idempotent forever!"></a>Use this one trick to make your messages idempotent forever!</h2><p>There’s a little trick in messaging where you can turn non-idempotent messages
+into idempotent ones by tagging a unique identifier to each message. The other
+party then remembers which messages it has seen and ignores duplicates. This
+introduces a problem where the client has to maintain state…but remembering a
+list of ids can get cumbersome if things go on for long enough.</p>
+<p>If you’re using an order-guaranteed network (such as TCP), you can just use an
+integer for the id. The other party can then maintain the last received id, and
+ignore messages less than or equal to that id.</p>
+<p>MQTT has packet identifiers (ids). The only problem is that MQTT’s ids are 2
+bytes for a maximum of 65535 messages in a session. That’s just unrealistic.
+But then how does MQTT make an at-least-once delivery?</p>
+<h2 id="The-MQTT-two-step"><a href="#The-MQTT-two-step" class="headerlink" title="The MQTT two-step"></a>The MQTT two-step</h2><p>MQTT’s packet identifiers can be randomly chosen, and are stored and released in
+the session state of the MQTT protocol. The session state must at least last as
+long as the underlying connection, and can often bridge such sessions.</p>
+<p>By default, MQTT messages are “at most once” delivery. You just fire and forget
+them. But the QoS 1 setting is known as “at least once”. Here’s a demonstration.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">+------+-------------------------------+---------+-----------------------------+</div><div class="line">| Step | Sender                        | Network | Receiver                    |</div><div class="line">|------|-------------------------------|---------|-----------------------------|</div><div class="line">|  1   | send PUBLISH QoS=1 Dup=0      |         |                             |</div><div class="line">|      |          ID=1234 &lt;message&gt;    |         |                             |</div><div class="line">|      | store ID/message locally      |         |                             |</div><div class="line">|      |                               |   --&gt;   |                             |</div><div class="line">|  2   |                               |         | send message to subscribers |</div><div class="line">|      |                               |         | send PUBACK ID=1234         |</div><div class="line">|      |                               |   &lt;--   |                             |</div><div class="line">|  3   | remove ID/message for ID 1234 |         |                             |</div><div class="line">+------+-------------------------------+---------+-----------------------------+</div></pre></td></tr></table></figure>
+<p>Here we can see the normal flow of a QoS 1 message, but what if we disconnected
+the client before they received an acknowledgement? In step 1, when we store the
+message and ID, we add it to a list of “unacknowledged” publish requests. If a
+publish command is not acknowledged (such as when a connection is broken), the
+sender <strong>MUST</strong> resend all the unacknowledged messages again (with Dup=1).</p>
+<p>In this way, <em>assuming clients eventually reconnect</em>, all QoS 1 messages are
+delivered at least once, and will stop retransmitting when the 2 messages are
+received.</p>
+<h2 id="The-MQTT-box-step"><a href="#The-MQTT-box-step" class="headerlink" title="The MQTT box step"></a>The MQTT box step</h2><p>But what about “exactly once” kinds of delivery (QoS 2)? That requires a bit
+more orchestration, but it is not magic. The sender is required to hold on to
+the message and ID for a bit longer, and the receiver has to keep the ID around
+as well. Here’s the normal flow of a PUBLISH request under QoS2:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">+------+-------------------------------+---------+------------------------------+</div><div class="line">| Step | Sender                        | Network | Receiver                     |</div><div class="line">|------|-------------------------------|---------|------------------------------|</div><div class="line">|  1   | send PUBLISH QoS=2 Dup=0 \    |         |                              |</div><div class="line">|      |          ID=1234 &lt;message&gt;    |         |                              |</div><div class="line">|      | store ID/message locally      |         |                              |</div><div class="line">|      |                               |   --&gt;   |                              |</div><div class="line">|  2   |                               |         | store packet ID              |</div><div class="line">|      |                               |         | send message to subscribers  |</div><div class="line">|      |                               |         | send PUBREC ID=1234          |</div><div class="line">|      |                               |   &lt;--   |                              |</div><div class="line">|  3   | remove message for ID 1234    |         |                              |</div><div class="line">|      | send PUBREL ID=1234           |         |                              |</div><div class="line">|      |                               |   --&gt;   |                              |</div><div class="line">|  4   |                               |         | remove packet ID             |</div><div class="line">|      |                               |         | send PUBCOMP ID=1234         |</div><div class="line">|      |                               |   &lt;--   |                              |</div><div class="line">|  5   | remove packet ID              |         |                              |</div><div class="line">+------+-------------------------------+---------+------------------------------+</div></pre></td></tr></table></figure>
+<p>Here, we can see how this is a bit more complicated now than the base case. When
+the sender stores an ID/message or an ID, they are storing it as an
+“unacknowledged message” in step 1, and an “unacknowledged release” in step 3.
+Again, clients <em>MUST</em> resend anything that’s unacknowledged when they reconnect,
+which means that any duplicated messages can be safely ignored. And at the end
+of a successful transaction, the session on either party (sender or receiver)
+does not need to remember which IDs have completed the 4-message box step.</p>
+<h2 id="Conclusion-Danger-still-lurks"><a href="#Conclusion-Danger-still-lurks" class="headerlink" title="Conclusion: Danger still lurks"></a>Conclusion: Danger still lurks</h2><p>So, while MQTT safely implements <em>at most once</em>, <em>at least once</em>, and <em>exactly
+once</em> delivery guarantees for its messages under the assumption that all
+clients eventually successfully reconnect, that doesn’t mean that MQTT provides
+guarantees itself on the order of those messages. Outside the context of a
+single message, the only order that is guaranteed is that messages from the same
+publisher will arrive in the same order they are published.</p>
+<p>If a program relies on always seeing the cause of action before its effects by
+a third party, and relies on the MQTT ordering mechanism to guarantee that, most
+single servers will happily oblige. It is unlikely that a single server forward
+a request from one client before finishing forwarding another message. But in a
+bridged or clustered environment, the only thing that has to hold true is that
+each client’s ordering must be respected. You can see effects before causes in a
+compliant MQTT system.</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                        <li>
+                            <a href="http://twitter.com/apsonge" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/asonge" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="mailto:a@songe.me" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-envelope-o fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2017 Alexander Songe<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
